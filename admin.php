@@ -16,22 +16,15 @@ function S3MSAdminContent() {
             $errors[] = "S3 Bucket Name Missing!";
         }
 
-        if (!isset($_POST['s3_access_key']) || trim($_POST['s3_access_key']) == '') {
-            $errors[] = "S3 Access Key Missing!";
-        }
-
-        if (!isset($_POST['s3_secret_key']) || trim($_POST['s3_secret_key']) == '') {
-            $errors[] = "S3 Secret Key Missing!";
-        }
-
         $bucket = trim($_POST['s3_bucket']);
-        $access_key = trim($_POST['s3_access_key']);
-        $secret_key = trim($_POST['s3_secret_key']);
         $ssl = isset($_POST['s3_ssl']) ? 1 : 0;
 
         // Test connectivity
         require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'S3.php';
-        $s3 = new S3($access_key, $secret_key);
+        require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 's3-access.php';
+        $s3_settings = new S3Access();
+
+        $s3 = new S3($s3_settings->get_access_key_id(), $s3_settings->get_secret_access_key());
         $s3->setSSL((bool) $ssl);
         $s3->setExceptions(true);
 
@@ -52,8 +45,6 @@ function S3MSAdminContent() {
             $settings = array(
                 's3_bucket' => trim($_POST['s3_bucket']),
                 's3_bucket_path' => isset($_POST['s3_bucket_path']) ? ltrim(rtrim(trim($_POST['s3_bucket_path']), '/') ,'/') : '',
-                's3_access_key' => trim($_POST['s3_access_key']),
-                's3_secret_key' => trim($_POST['s3_secret_key']),
                 's3_ssl' => isset($_POST['s3_ssl']) ? 1 : 0,
                 's3_delete_local' => isset($_POST['s3_delete_local']) ? 1 : 0,
                 's3_delete' => isset($_POST['s3_delete']) ? 1 : 0,
@@ -109,16 +100,6 @@ function S3MSAdminContent() {
     $s3_bucket_path = isset($_POST['s3_bucket_path']) ? trim($_POST['s3_bucket_path']) : null;
     if (!$s3_bucket_path && is_array($settings) && isset($settings['s3_bucket_path'])) {
         $s3_bucket_path = $settings['s3_bucket_path'];
-    }
-
-    $s3_access_key = isset($_POST['s3_access_key']) ? trim($_POST['s3_access_key']) : null;
-    if (!$s3_access_key && is_array($settings) && isset($settings['s3_access_key'])) {
-        $s3_access_key = $settings['s3_access_key'];
-    }
-
-    $s3_secret_key = isset($_POST['s3_secret_key']) ? trim($_POST['s3_secret_key']) : null;
-    if (!$s3_secret_key && is_array($settings) && isset($settings['s3_secret_key'])) {
-        $s3_secret_key = $settings['s3_secret_key'];
     }
 
     $s3_ssl = isset($_POST['s3_ssl']) ? (int) $_POST['s3_ssl'] : null;
@@ -182,18 +163,6 @@ function S3MSAdminContent() {
                             <td>
                                 <input style="width:300px;" type="text" name="s3_bucket_path" value="<?php echo $s3_bucket_path;?>" placeholder="Enter Additional S3 Bucket Path e.g. blog or blog/assets"/>
                                 <p class="description">If 'blog' is entered, uploads go to https://bucketname.s3.amazonaws.com/blog/YYYY/MM/file.ext </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label for="key"><?php _e("S3 Access Key:", 'S3MS' ); ?></label></th>
-                            <td>
-                                <input style="width:400px;" type="text" name="s3_access_key" value="<?php echo $s3_access_key;?>" placeholder="Enter S3 Access Key"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label for="key"><?php _e("S3 Secret Key:", 'S3MS' ); ?></label></th>
-                            <td>
-                                <input style="width:400px;" type="text" name="s3_secret_key" value="<?php echo $s3_secret_key;?>" placeholder="Enter S3 Secret Key"/>
                             </td>
                         </tr>
                         <tr>
@@ -289,7 +258,7 @@ function S3MSAdminContent() {
                 <table class="wp-list-table widefat">
                     <thead>
                         <tr>
-                            <th scope="col">Select All<input type="checkbox" id="select-all"/></span></th>
+                            <th scope="col">All<input type="checkbox" id="select-all"/></span></th>
                             <th scope="col">Local File</span></th>
                             <th scope="col">Exists Locally?</th>
                             <th scope="col">S3 File</span></th>
@@ -307,9 +276,9 @@ function S3MSAdminContent() {
                         <tr>
                             <td><input type="checkbox" class="files" name="selected[]" value="<?php echo $file->ID;?>"/></td>
                             <td><?php echo '<a href="'.$file->guid.'" target="_blank">'.$file->guid.'</a>';?></td>
-                            <td><?php echo file_exists(str_replace($ud['baseurl'], $ud['basedir'], $file->guid)) ? '&#10003;' : '';?></td>
+                            <td><?php echo file_exists(str_replace($ud['baseurl'], $ud['basedir'], $file->guid)) ? '<span style="color:green;">YES</span>' : '<span style="color:red;">NO</span>';?></td>
                             <td><?php $s3_url = S3MS::attachmentUrl($file->guid, $file->ID); echo $s3_url == $file->guid ? '' : '<a href="'.$s3_url.'" target="_blank">'.$s3_url.'</a>';?></td>
-                            <td><?php echo $file->meta_value ? '&#10003;' : '';?></td>
+                            <td><?php echo $file->meta_value ? '<span style="color:green;">YES</span>' : '<span style="color:red;">NO</span>';?></td>
                         </tr>
                         <?php endforeach;?>
                     </tbody>

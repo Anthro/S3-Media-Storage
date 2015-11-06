@@ -1,8 +1,8 @@
 === S3 Media Storage ===
-Contributors: Anthony Gentile
+Contributors: Anthony Gentile, Daniel Seripap <dan@anthroagency.com>
 Tags: S3, media, images
-Requires at least: 3.0
-Tested up to: 3.6
+Requires at least: 4.3
+Tested up to: 4.3
 Stable tag: 1.0.3
 License: GPLv2 or later
 

@@ -76,7 +76,15 @@ class S3MS {
     public static function getSettings()
     {
         if (!self::$settings) {
+            require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 's3-access.php';
+            $s3_settings = new S3Access();
             self::$settings = json_decode(get_option('S3MS_settings'), true);
+
+            if ($s3_settings->are_access_keys_set()) {
+                self::$settings['s3_access_key'] = $s3_settings->get_access_key_id();
+                self::$settings['s3_secret_key'] = $s3_settings->get_secret_access_key();
+            }
+
         }
         return self::$settings;
     }
@@ -366,6 +374,7 @@ class S3MS_Transfer_Adapter_S3Class {
         if (!class_exists('S3')) {
             require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'S3.php';
         }
+
 
         $this->settings = $settings;
         $this->s3 = new S3($settings['s3_access_key'], $settings['s3_secret_key']);
