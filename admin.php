@@ -51,6 +51,7 @@ function S3MSAdminContent() {
                 's3_expires' => trim($_POST['s3_expires']),
                 's3_cloudfront' => trim($_POST['s3_cloudfront']),
                 's3_protocol' => in_array(trim($_POST['s3_protocol']), array('http','https','relative')) ? trim($_POST['s3_protocol']) : 'relative',
+                'tiny_png_key' => trim($_POST['tiny_png_key']),
                 's3_transfer_method' => in_array(trim($_POST['s3_transfer_method']), array('s3class','s3cmd','awscli','background')) ? trim($_POST['s3_transfer_method']) : 's3class',
                 'valid' => 1,
             );
@@ -127,6 +128,12 @@ function S3MSAdminContent() {
         $s3_cloudfront = $settings['s3_cloudfront'];
     }
 
+//tiny_png_key
+    $tiny_png_key = isset($_POST['tiny_png_key']) ? trim($_POST['tiny_png_key']) : null;
+    if (!$tiny_png_key && is_array($settings) && isset($settings['tiny_png_key'])) {
+        $tiny_png_key = $settings['tiny_png_key'];
+    }
+
     $s3_protocol = isset($_POST['s3_protocol']) ? trim($_POST['s3_protocol']) : null;
     if (!$s3_protocol && is_array($settings) && isset($settings['s3_protocol'])) {
         $s3_protocol = $settings['s3_protocol'];
@@ -198,6 +205,13 @@ function S3MSAdminContent() {
                             <td>
                                 <input style="width:400px;" type="text" name="s3_cloudfront" value="<?php echo $s3_cloudfront;?>" placeholder="Enter CloudFront Domain Name"/>
                                 <p class="description">e.g. abcslfn3kg17h.cloudfront.net</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label for="key"><?php _e("TinyPNG API Key:", 'S3MS' ); ?></label></th>
+                            <td>
+                                <input style="width:400px;" type="text" name="tiny_png_key" value="<?php echo $tiny_png_key;?>" placeholder="Enter TinyPNG API Key"/>
+                                <p class="description">e.g. abc12345678</p>
                             </td>
                         </tr>
                         <tr>

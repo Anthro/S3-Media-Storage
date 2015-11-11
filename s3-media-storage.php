@@ -5,8 +5,8 @@
 /*
 Plugin Name: S3 Media Storage
 Description: Store media library contents onto S3 directly without the need for temporarily storing files on the filesystem/cron jobs. This is more ideal for multiple web server environemnts.
-Version: 1.0.3
-Author: Anthony Gentile
+Version: 1.2.0
+Author: Anthony Gentile, Daniel Seripap
 Author URI: http://agentile.com
 */
 
@@ -135,9 +135,9 @@ class S3MS {
             }
         } else {
             if ($bucket_path) {
-                $url = $protocol . $bucket . '.s3.amazonaws.com/' . $bucket_path . '/' . $file;
+                $url = $protocol . 's3.amazonaws.com/' . $bucket . '/' . $bucket_path . '/' . $file;
             } else {
-                $url = $protocol . $bucket . '.s3.amazonaws.com/' . $file;
+                $url = $protocol . 's3.amazonaws.com/' . $bucket . '/' . $file;
             }
         }
 
@@ -375,11 +375,15 @@ class S3MS_Transfer_Adapter_S3Class {
             require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'S3.php';
         }
 
+        if (!class_exists('TinyPNG')) {
+            require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'TinyPNG.php';
+        }
 
         $this->settings = $settings;
         $this->s3 = new S3($settings['s3_access_key'], $settings['s3_secret_key']);
         $this->s3->setSSL((bool) $this->settings['s3_ssl']);
         $this->s3->setExceptions(true);
+        $this->tinyPNG = new TinyPNG($settings['tiny_png_key']);
     }
 
     public function delete($file)
@@ -403,7 +407,13 @@ class S3MS_Transfer_Adapter_S3Class {
         }
 
         try {
+            $type = get_post_mime_type($attachment_id);
+            if ($type == 'image/jpeg' || $type == 'image/png') {
+                $this->tinyPNG->shrink($attachment_path);
+            }
+            
             $this->s3->putObjectFile($attachment_path, $this->settings['s3_bucket'], $s3_path, S3::ACL_PUBLIC_READ, $meta_headers, $request_headers);
+            
             if ($attachment_id) {
                 // We store per file instead of always just referencing the settings, as if settings change we don't want to break previously
                 // uploaded files that refer to different buckets/cloudfront/etc.
@@ -493,6 +503,8 @@ class S3MS_Transfer_Adapter_Background_Response {
 /**
  * Register hooks/filters
  */
+// add_filter('wp_handle_upload_prefilter', array('S3MS', 'preupload') 'hetworkstinypng_uploadevent' );
+
 // Handle original image uploads and edits for that image
 add_filter('wp_update_attachment_metadata', array('S3MS', 'updateAttachmentMetadata'), 9, 2);
 // Handle thumbs that are created for that image

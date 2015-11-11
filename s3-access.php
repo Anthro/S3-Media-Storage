@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Taken from https://github.com/deliciousbrains/wp-amazon-web-services/blob/master/classes/amazon-web-services.php
+ */
+
 class S3Access {
 
     /**

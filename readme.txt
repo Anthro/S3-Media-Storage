@@ -3,7 +3,7 @@ Contributors: Anthony Gentile, Daniel Seripap <dan@anthroagency.com>
 Tags: S3, media, images
 Requires at least: 4.3
 Tested up to: 4.3
-Stable tag: 1.0.3
+Stable tag: 1.2.0
 License: GPLv2 or later
 
 S3 Media Storage WordPress Plugin
@@ -23,12 +23,17 @@ uploaded file all in the same request.
 * Amazon CloudFront support
 * Deleting from S3 is optional (price concern for some)
 * No additional database tables needed
+* TinyPNG Support
 
 == Installation ==
 
 Upload the S3 Media Storage plugin to your blog, activate it, then enter your S3 details. Ensure that you have cURL PHP extension installed.
 
 == Changelog ==
+
+= 1.2.0 =
+* Image Optimizer (tinypng)
+* Move S3 Settings to wp-config.php
 
 = 1.0.3 =
 * Change to OOP style.
