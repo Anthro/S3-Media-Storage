@@ -111,6 +111,7 @@ class S3MS {
         // $file = isset($custom_fields['S3MS_file']) ? $custom_fields['S3MS_file'][0] : null;
         $cloudfront = isset($custom_fields['S3MS_cloudfront']) ? $custom_fields['S3MS_cloudfront'][0] : null;
         $settings = self::getSettings();
+        $rewrite_url = isset($settings['s3_rewrite_url']) ? $settings['s3_rewrite_url'] : FALSE;
 
         // Determine protocol to serve from
         if ($settings['s3_protocol'] == 'http') {
@@ -132,6 +133,12 @@ class S3MS {
                 $url = $protocol . $cloudfront . '/' . $bucket_path . '/' . $file;
             } else {
                 $url = $protocol . $cloudfront . '/' . $file;
+            }
+        } else if ($rewrite_url) {
+            if ($bucket_path) {
+                $url = $protocol . $rewrite_url . '/' . $bucket_path . '/' . $file;
+            } else {
+                $url = $protocol . $rewrite_url . '/' . $file;
             }
         } else {
             if ($bucket_path) {

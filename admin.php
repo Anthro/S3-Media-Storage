@@ -50,6 +50,7 @@ function S3MSAdminContent() {
                 's3_delete' => isset($_POST['s3_delete']) ? 1 : 0,
                 's3_expires' => trim($_POST['s3_expires']),
                 's3_cloudfront' => trim($_POST['s3_cloudfront']),
+                's3_rewrite_url' => trim($_POST['s3_rewrite_url']),
                 's3_protocol' => in_array(trim($_POST['s3_protocol']), array('http','https','relative')) ? trim($_POST['s3_protocol']) : 'relative',
                 'tiny_png_key' => trim($_POST['tiny_png_key']),
                 's3_transfer_method' => in_array(trim($_POST['s3_transfer_method']), array('s3class','s3cmd','awscli','background')) ? trim($_POST['s3_transfer_method']) : 's3class',
@@ -128,7 +129,11 @@ function S3MSAdminContent() {
         $s3_cloudfront = $settings['s3_cloudfront'];
     }
 
-//tiny_png_key
+    $s3_rewrite_url = isset($_POST['s3_rewrite_url']) ? trim($_POST['s3_rewrite_url']) : null;
+    if (!$s3_rewrite_url && is_array($settings) && isset($settings['s3_rewrite_url'])) {
+        $s3_rewrite_url = $settings['s3_rewrite_url'];
+    }
+
     $tiny_png_key = isset($_POST['tiny_png_key']) ? trim($_POST['tiny_png_key']) : null;
     if (!$tiny_png_key && is_array($settings) && isset($settings['tiny_png_key'])) {
         $tiny_png_key = $settings['tiny_png_key'];
@@ -207,6 +212,13 @@ function S3MSAdminContent() {
                                 <p class="description">e.g. abcslfn3kg17h.cloudfront.net</p>
                             </td>
                         </tr>
+                        <tr>
+                            <th><label for="key"><?php _e("Rewrite URL:", 'S3MS' ); ?></label></th>
+                            <td>
+                                <input style="width:400px;" type="text" name="s3_rewrite_url" value="<?php echo $s3_rewrite_url;?>" placeholder="Enter Rewrite URL"/>
+                                <p class="description">e.g. assets.domain.com</p>
+                            </td>
+                        </tr>            
                         <tr>
                             <th><label for="key"><?php _e("TinyPNG API Key:", 'S3MS' ); ?></label></th>
                             <td>
