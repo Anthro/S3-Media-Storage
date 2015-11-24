@@ -256,7 +256,7 @@ function S3MSAdminContent() {
                 // So lets just do our own query.
                 global $wpdb;
                 $page = isset($_GET['s3ms_page']) ? (int) $_GET['s3ms_page'] : 1;
-                $limit = 100;
+                $limit = 500;
                 $offset = ($limit * $page) - $limit;
 
                 $sql = "SELECT COUNT(1) as count
