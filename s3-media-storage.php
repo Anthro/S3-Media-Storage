@@ -383,7 +383,7 @@ class S3MS_Transfer_Adapter_S3Class {
         }
 
         if (!class_exists('TinyPNG')) {
-            require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'TinyPNG.php';
+            require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'tinypng.php';
         }
 
         $this->settings = $settings;
